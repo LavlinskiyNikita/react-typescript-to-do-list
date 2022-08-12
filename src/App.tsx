@@ -2,29 +2,30 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import './App.css';
 
+import { CreateProdect } from './component/createProdect';
+import { Modal } from './component/modal';
 import { Product } from './component/product';
-// import { products } from './data/products';
+import { useProduct } from './hooks/products';
 import { IProduct } from './modelss';
 
+
 const App = () => {
-  const [products, setProducts] = useState<IProduct[]>([])
+  const {products, addProduct} = useProduct()
+  const [modal, setModal] = useState(true)
 
-  async function featchS() {
-    const response = await axios.get<IProduct[]>('https://fakestoreapi.com/products?limit=70')
-    setProducts(response.data)
+  const createHendler = (product: IProduct) => {
+    setModal(false)
+    addProduct(product)
   }
-
-  useEffect(() => {
-    featchS()
-  }, [])
   
   return (
     <div className="container mx-auto max-w-2xl pt-5">
-      {
-        products.map(product =>
-          <Product product={product} key={product.id}/>)
-      }
+      {products.map(product =><Product product={product} key={product.id}/>)}
+      {modal && <Modal title='create product'>
+        <CreateProdect onCreate={createHendler}/>
+      </Modal>}
     </div>
+
   );
 }
 
